@@ -1,0 +1,84 @@
+<div class="dashboard-wrapper">
+
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <div>
+      <h1>RevPay Dashboard</h1>
+      <p class="subtitle">Manage your payments, wallet & activity</p>
+    </div>
+
+    <div class="user-actions">
+      <span class="role-badge">{{ currentUser?.role }}</span>
+      <button class="btn btn-danger" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- USER CARD -->
+  <div class="card user-card">
+    <h3>Hello, {{ userProfile?.firstName || 'User' }} {{ userProfile?.lastName || '' }}</h3>
+    <p>{{ currentUser?.email }}</p>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="grid">
+
+    <!-- WALLET -->
+    <div class="card stat-card">
+      <h4>Wallet Balance</h4>
+      <div class="wallet-amount">
+        ₹{{ walletBalance | number:'1.2-2' }}
+      </div>
+      <span class="muted">Available Balance</span>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="card">
+      <h4>Quick Actions</h4>
+
+      <div class="action-grid">
+        <button class="btn primary" routerLink="/send-money">Send Money</button>
+        <button class="btn secondary" routerLink="/transactions">Transactions</button>
+        <button class="btn outline" routerLink="/payment-methods">Payment Methods</button>
+        <button class="btn success" routerLink="/add-funds">Add Funds</button>
+        <button class="btn warning" routerLink="/money-requests">Requests</button>
+        <button class="btn info" routerLink="/social-payments">Social Pay</button>
+        <button class="btn success" (click)="addInitialFunds()">Initial Funds</button>
+        <button class="btn primary" routerLink="/notifications">Notifications</button>
+        <button class="btn outline" routerLink="/profile">Profile</button>
+        <button class="btn info" routerLink="/analytics">Analytics</button>
+      </div>
+
+      <!-- BUSINESS -->
+      <div class="business-section" *ngIf="currentUser?.role === 'BUSINESS'">
+        <h5>Business Tools</h5>
+        <div class="action-grid">
+          <button class="btn primary" routerLink="/invoices">Invoices</button>
+          <button class="btn warning" routerLink="/business-verification">Verification</button>
+          <button class="btn outline" routerLink="/add-payment-method">Add Method</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT INFO -->
+  <div class="card">
+    <h4>Account Information</h4>
+
+    <div class="info-grid">
+      <div>
+        <p><strong>Full Name:</strong> {{ userProfile?.firstName }} {{ userProfile?.lastName }}</p>
+        <p><strong>Email:</strong> {{ currentUser?.email }}</p>
+        <p><strong>Phone:</strong> {{ userProfile?.phone || 'Not provided' }}</p>
+        <p><strong>Account Number:</strong> {{ accountNumber || 'Loading...' }}</p>
+      </div>
+
+      <div>
+        <p><strong>Account Type:</strong> <span class="role-badge">{{ userProfile?.role || currentUser?.role }}</span></p>
+        <p><strong>Status:</strong> <span class="status">Active</span></p>
+        <p><strong>Member Since:</strong> {{ userProfile?.createdAt || currentUser?.createdAt | date:'mediumDate' || 'Recent' }}</p>
+        <p><strong>Verification:</strong> <span class="status" [ngClass]="{'verified': userProfile?.isVerified || currentUser?.isVerified, 'pending': !(userProfile?.isVerified || currentUser?.isVerified)}">{{ userProfile?.isVerified || currentUser?.isVerified ? 'Verified' : 'Pending' }}</span></p>
+      </div>
+    </div>
+  </div>
+
+</div>

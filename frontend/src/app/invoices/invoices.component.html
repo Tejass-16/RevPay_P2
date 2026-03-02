@@ -1,0 +1,223 @@
+<div class="container">
+  <div class="card">
+    <h2>Invoice Management</h2>
+    
+    <!-- Success/Error Messages -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="btn btn-primary" (click)="showCreateForm = true; resetForm()">
+        <i class="fas fa-plus"></i> Create Invoice
+      </button>
+      <button class="btn btn-info" (click)="loadInvoices()">
+        <i class="fas fa-refresh"></i> Refresh
+      </button>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-section">
+      <label for="statusFilter">Filter by Status:</label>
+      <select id="statusFilter" [(ngModel)]="selectedStatus" (change)="filterInvoices()">
+        <option value="all">All Invoices</option>
+        <option value="DRAFT">Draft</option>
+        <option value="SENT">Sent</option>
+        <option value="PAID">Paid</option>
+        <option value="OVERDUE">Overdue</option>
+        <option value="CANCELLED">Cancelled</option>
+      </select>
+    </div>
+
+    <!-- Invoice List -->
+    <div class="invoice-list" *ngIf="!showCreateForm && !showEditForm">
+      <div *ngIf="filteredInvoices.length === 0" class="no-data">
+        <p>No invoices found. Create your first invoice!</p>
+      </div>
+      
+      <div class="invoice-card" *ngFor="let invoice of filteredInvoices">
+        <div class="invoice-header">
+          <h3>{{ invoice.invoiceNumber }}</h3>
+          <span class="status-badge" [class]="getStatusClass(invoice.status)">
+            {{ invoice.status }}
+          </span>
+        </div>
+        
+        <div class="invoice-details">
+          <p><strong>Customer:</strong> {{ invoice.customerName }}</p>
+          <p><strong>Email:</strong> {{ invoice.customerEmail }}</p>
+          <p><strong>Amount:</strong> ₹{{ invoice.totalAmount?.toFixed(2) || '0.00' }}</p>
+          <p><strong>Due Date:</strong> {{ invoice.dueDate | date:'medium' }}</p>
+          <p *ngIf="isOverdue(invoice)" class="overdue-warning">
+            <i class="fas fa-exclamation-triangle"></i> This invoice is overdue!
+          </p>
+        </div>
+        
+        <div class="invoice-actions">
+          <button class="btn btn-sm btn-info" (click)="editInvoice(invoice)">Edit</button>
+          <button class="btn btn-sm btn-success" 
+                  *ngIf="invoice.status === 'DRAFT'" 
+                  (click)="sendInvoice(invoice.id)">Send</button>
+          <button class="btn btn-sm btn-warning" 
+                  *ngIf="invoice.status === 'SENT'" 
+                  (click)="markAsPaid(invoice.id)">Mark Paid</button>
+          <button class="btn btn-sm btn-primary" 
+                  *ngIf="invoice.status === 'SENT'" 
+                  (click)="generatePaymentLink(invoice.id)">Payment Link</button>
+          <button class="btn btn-sm btn-danger" 
+                  *ngIf="invoice.status !== 'PAID'" 
+                  (click)="cancelInvoice(invoice.id)">Cancel</button>
+          <button class="btn btn-sm btn-danger" (click)="deleteInvoice(invoice.id)">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create/Edit Invoice Form -->
+    <div class="invoice-form" *ngIf="showCreateForm || showEditForm">
+      <h3>{{ showCreateForm ? 'Create New Invoice' : 'Edit Invoice' }}</h3>
+      
+      <form (ngSubmit)="showCreateForm ? createInvoice() : updateInvoice()">
+        <!-- Customer Information -->
+        <div class="form-section">
+          <h4>Customer Information</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="customerName">Customer Name *</label>
+              <input type="text" id="customerName" name="customerName" 
+                     [(ngModel)]="invoiceForm.customerName" required>
+            </div>
+            <div class="form-group">
+              <label for="customerEmail">Customer Email *</label>
+              <input type="email" id="customerEmail" name="customerEmail" 
+                     [(ngModel)]="invoiceForm.customerEmail" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="customerPhone">Phone</label>
+              <input type="tel" id="customerPhone" name="customerPhone" 
+                     [(ngModel)]="invoiceForm.customerPhone">
+            </div>
+            <div class="form-group">
+              <label for="dueDate">Due Date *</label>
+              <input type="date" id="dueDate" name="dueDate" 
+                     [(ngModel)]="invoiceForm.dueDate" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="customerAddress">Address</label>
+            <textarea id="customerAddress" name="customerAddress" 
+                      [(ngModel)]="invoiceForm.customerAddress" rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- Invoice Items -->
+        <div class="form-section">
+          <h4>Invoice Items</h4>
+          
+          <!-- Add Item Form -->
+          <div class="add-item-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="itemDescription">Description</label>
+                <input type="text" id="itemDescription" name="itemDescription" 
+                       [(ngModel)]="newItemForm.description">
+              </div>
+              <div class="form-group">
+                <label for="itemQuantity">Quantity</label>
+                <input type="number" id="itemQuantity" name="itemQuantity" 
+                       [(ngModel)]="newItemForm.quantity" min="1" step="1">
+              </div>
+              <div class="form-group">
+                <label for="itemPrice">Unit Price (₹)</label>
+                <input type="number" id="itemPrice" name="itemPrice" 
+                       [(ngModel)]="newItemForm.unitPrice" min="0" step="0.01">
+              </div>
+              <div class="form-group">
+                <label>&nbsp;</label>
+                <button type="button" class="btn btn-secondary" (click)="addItem()">Add Item</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Items List -->
+          <div class="items-list" *ngIf="invoiceForm.items.length > 0">
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th>Description</th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Total</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of invoiceForm.items; let i = index">
+                  <td>{{ item.description }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>₹{{ item.unitPrice.toFixed(2) }}</td>
+                  <td>₹{{ item.lineTotal.toFixed(2) }}</td>
+                  <td>
+                    <button type="button" class="btn btn-sm btn-danger" 
+                            (click)="removeItem(i)">Remove</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Totals -->
+        <div class="form-section" *ngIf="invoiceForm.items.length > 0">
+          <h4>Invoice Totals</h4>
+          <div class="totals">
+            <div class="total-row">
+              <span>Subtotal:</span>
+              <span>₹{{ calculateSubtotal().toFixed(2) }}</span>
+            </div>
+            <div class="total-row">
+              <span>Tax (18% GST):</span>
+              <span>₹{{ calculateTax().toFixed(2) }}</span>
+            </div>
+            <div class="total-row grand-total">
+              <span>Total:</span>
+              <span>₹{{ calculateTotal().toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="form-section">
+          <h4>Additional Information</h4>
+          <div class="form-group">
+            <label for="paymentTerms">Payment Terms</label>
+            <input type="text" id="paymentTerms" name="paymentTerms" 
+                   [(ngModel)]="invoiceForm.paymentTerms" 
+                   placeholder="e.g., Net 30 days">
+          </div>
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes" 
+                      [(ngModel)]="invoiceForm.notes" rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+            {{ isLoading ? 'Processing...' : (showCreateForm ? 'Create Invoice' : 'Update Invoice') }}
+          </button>
+          <button type="button" class="btn btn-secondary" 
+                  (click)="showCreateForm = false; showEditForm = false; resetForm()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

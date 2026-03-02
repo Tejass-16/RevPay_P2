@@ -1,0 +1,82 @@
+<div class="app-layout">
+
+  <!-- ================= HEADER ================= -->
+  <!-- <header class="app-header">
+    <div class="header-container">
+
+      <div class="header-brand">
+        <h1 class="brand-logo">RevPay</h1>
+        <span class="brand-tagline">Secure Digital Payments</span>
+      </div>
+
+      <nav class="main-nav">
+        <div class="nav-links">
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+            <span class="nav-icon">🏠</span> Dashboard
+          </a>
+          <a routerLink="/transactions" routerLinkActive="active" class="nav-link">
+            <span class="nav-icon">📊</span> Transactions
+          </a>
+          <a routerLink="/send-money" routerLinkActive="active" class="nav-link">
+            <span class="nav-icon">💸</span> Send Money
+          </a>
+          <a routerLink="/money-requests" routerLinkActive="active" class="nav-link">
+            <span class="nav-icon">💰</span> Requests
+          </a>
+          <a routerLink="/notifications" routerLinkActive="active" class="nav-link">
+            <span class="nav-icon">🔔</span> Alerts
+          </a>
+          <a routerLink="/profile" routerLinkActive="active" class="nav-link">
+            <span class="nav-icon">👤</span> Profile
+          </a>
+        </div>
+      </nav>
+
+      <div class="header-actions">
+        <button
+          class="logout-btn"
+          *ngIf="authService.isLoggedIn()"
+          (click)="logout()">
+          Logout
+        </button>
+      </div>
+
+    </div>
+  </header> -->
+
+  <!-- ================= MAIN ================= -->
+  <main class="app-main">
+    <div class="main-container">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="app-footer">
+  <div class="footer-container horizontal-footer">
+
+    <!-- Brand -->
+    <div class="footer-brand">
+      <h4 class="footer-title">RevPay</h4>
+      <p>Your trusted digital payment platform</p>
+    </div>
+
+    <!-- Links -->
+    <div class="footer-links">
+      <a class="footer-link" href="#">About</a>
+      <a class="footer-link" href="#">Security</a>
+      <a class="footer-link" href="#">Support</a>
+      <a class="footer-link" href="#">Terms</a>
+      <a class="footer-link" href="#">Privacy</a>
+      <a class="footer-link" href="#">Compliance</a>
+    </div>
+
+    <!-- Copyright -->
+    <div class="footer-copy">
+      © 2026 RevPay. All rights reserved.
+    </div>
+
+  </div>
+</footer>
+
+</div>

@@ -1,0 +1,190 @@
+<div class="container">
+  <div class="card">
+    <h2>Business Verification</h2>
+    
+    <!-- Success/Error Messages -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Verification Status -->
+    <div class="verification-status" *ngIf="!showUploadForm && !showResubmitForm">
+      <div class="status-header">
+        <h3>Verification Status</h3>
+        <div class="status-badge" [class]="getStatusClass(verificationStatus.verificationStatus)">
+          <i [class]="getStatusIcon(verificationStatus.verificationStatus)"></i>
+          {{ verificationStatus.verificationStatus }}
+        </div>
+      </div>
+
+      <div class="status-message">
+        <p>{{ verificationStatus.message }}</p>
+      </div>
+
+      <!-- Business Information -->
+      <div class="business-info" *ngIf="verificationStatus.businessName">
+        <h4>Business Information</h4>
+        <div class="info-grid">
+          <div class="info-item">
+            <strong>Business Name:</strong> {{ verificationStatus.businessName }}
+          </div>
+          <div class="info-item">
+            <strong>Business Type:</strong> {{ verificationStatus.businessType }}
+          </div>
+          <div class="info-item">
+            <strong>Tax ID:</strong> {{ verificationStatus.taxId }}
+          </div>
+          <div class="info-item">
+            <strong>Business Address:</strong> {{ verificationStatus.businessAddress }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn btn-primary" 
+                *ngIf="verificationStatus.verificationStatus === 'PENDING' || verificationStatus.verificationStatus === 'REJECTED'"
+                (click)="showUploadForm = true">
+          <i class="fas fa-upload"></i> Upload Documents
+        </button>
+        <button class="btn btn-warning" 
+                *ngIf="verificationStatus.verificationStatus === 'REJECTED'"
+                (click)="showResubmitForm = true">
+          <i class="fas fa-redo"></i> Resubmit Verification
+        </button>
+        <button class="btn btn-info" (click)="loadVerificationStatus()">
+          <i class="fas fa-refresh"></i> Refresh Status
+        </button>
+      </div>
+    </div>
+
+    <!-- Document Upload Form -->
+    <div class="upload-form" *ngIf="showUploadForm">
+      <h3>Upload Verification Documents</h3>
+      <p>Please upload the following documents to verify your business:</p>
+      
+      <form (ngSubmit)="uploadDocuments()">
+        <!-- Business Registration -->
+        <div class="file-upload-group">
+          <label for="businessRegistration">Business Registration Document *</label>
+          <div class="file-input-wrapper">
+            <input type="file" id="businessRegistration" name="businessRegistration" 
+                   (change)="onFileSelected($event, 'businessRegistration')" 
+                   accept=".pdf,.jpg,.jpeg,.png" required>
+            <div class="file-info" *ngIf="selectedFiles.businessRegistration">
+              <span class="file-name">{{ getFileName(selectedFiles.businessRegistration) }}</span>
+              <span class="file-size">({{ formatFileSize(selectedFiles.businessRegistration.size) }})</span>
+              <button type="button" class="btn btn-sm btn-danger" 
+                      (click)="resetFileSelection('businessRegistration')">Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tax Document -->
+        <div class="file-upload-group">
+          <label for="taxDocument">Tax Document *</label>
+          <div class="file-input-wrapper">
+            <input type="file" id="taxDocument" name="taxDocument" 
+                   (change)="onFileSelected($event, 'taxDocument')" 
+                   accept=".pdf,.jpg,.jpeg,.png" required>
+            <div class="file-info" *ngIf="selectedFiles.taxDocument">
+              <span class="file-name">{{ getFileName(selectedFiles.taxDocument) }}</span>
+              <span class="file-size">({{ formatFileSize(selectedFiles.taxDocument.size) }})</span>
+              <button type="button" class="btn btn-sm btn-danger" 
+                      (click)="resetFileSelection('taxDocument')">Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Address Proof -->
+        <div class="file-upload-group">
+          <label for="addressProof">Address Proof *</label>
+          <div class="file-input-wrapper">
+            <input type="file" id="addressProof" name="addressProof" 
+                   (change)="onFileSelected($event, 'addressProof')" 
+                   accept=".pdf,.jpg,.jpeg,.png" required>
+            <div class="file-info" *ngIf="selectedFiles.addressProof">
+              <span class="file-name">{{ getFileName(selectedFiles.addressProof) }}</span>
+              <span class="file-size">({{ formatFileSize(selectedFiles.addressProof.size) }})</span>
+              <button type="button" class="btn btn-sm btn-danger" 
+                      (click)="resetFileSelection('addressProof')">Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Identity Proof (Optional) -->
+        <div class="file-upload-group">
+          <label for="identityProof">Identity Proof (Optional)</label>
+          <div class="file-input-wrapper">
+            <input type="file" id="identityProof" name="identityProof" 
+                   (change)="onFileSelected($event, 'identityProof')" 
+                   accept=".pdf,.jpg,.jpeg,.png">
+            <div class="file-info" *ngIf="selectedFiles.identityProof">
+              <span class="file-name">{{ getFileName(selectedFiles.identityProof) }}</span>
+              <span class="file-size">({{ formatFileSize(selectedFiles.identityProof.size) }})</span>
+              <button type="button" class="btn btn-sm btn-danger" 
+                      (click)="resetFileSelection('identityProof')">Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+            {{ isLoading ? 'Uploading...' : 'Upload Documents' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="showUploadForm = false">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Resubmit Form -->
+    <div class="resubmit-form" *ngIf="showResubmitForm">
+      <h3>Resubmit Business Information</h3>
+      <p>Please update your business information and resubmit for verification:</p>
+      
+      <form (ngSubmit)="resubmitVerification()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="businessName">Business Name *</label>
+            <input type="text" id="businessName" name="businessName" 
+                   [(ngModel)]="resubmitForm.businessName" required>
+          </div>
+          <div class="form-group">
+            <label for="businessType">Business Type *</label>
+            <input type="text" id="businessType" name="businessType" 
+                   [(ngModel)]="resubmitForm.businessType" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taxId">Tax ID *</label>
+            <input type="text" id="taxId" name="taxId" 
+                   [(ngModel)]="resubmitForm.taxId" required>
+          </div>
+          <div class="form-group">
+            <label for="businessAddress">Business Address *</label>
+            <input type="text" id="businessAddress" name="businessAddress" 
+                   [(ngModel)]="resubmitForm.businessAddress" required>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-warning" [disabled]="isLoading">
+            {{ isLoading ? 'Submitting...' : 'Resubmit Verification' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="showResubmitForm = false">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

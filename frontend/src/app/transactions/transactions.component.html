@@ -1,0 +1,193 @@
+<div class="tx-wrapper">
+
+  <div class="card tx-card">
+
+    <!-- HEADER -->
+    <div class="tx-header">
+      <div>
+        <h2>Transaction History</h2>
+        <span class="tx-count">{{ transactions.length }} transactions</span>
+      </div>
+
+      <button class="btn-outline-sm" (click)="loadTransactions()">
+        <span *ngIf="isLoading" class="spinner"></span>
+        Refresh
+      </button>
+    </div>
+
+    <!-- BODY -->
+    <div class="card-body">
+
+      <!-- LOADING -->
+      <div *ngIf="isLoading && transactions.length === 0" class="state-box">
+        <div class="spinner large"></div>
+        <p>Loading transactions...</p>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div *ngIf="!isLoading && transactions.length === 0" class="state-box">
+        <div class="empty-icon">📄</div>
+        <h3>No transactions found</h3>
+        <p>Your transaction history will appear here once you start using RevPay</p>
+
+        <div class="state-actions">
+          <button class="btn-primary" routerLink="/send-money">Send Money</button>
+          <button class="btn-outline" routerLink="/add-funds">Add Funds</button>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div *ngIf="!isLoading && transactions.length > 0" class="table-wrapper">
+        <table class="tx-table enhanced">
+          <thead>
+            <tr>
+              <th>Transaction ID</th>
+              <th>Date & Time</th>
+              <th>User Details</th>
+              <th>Transaction Type</th>
+              <th>Debited/Credited</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let transaction of transactions" class="transaction-row">
+              <!-- Transaction ID -->
+              <td>
+                <div class="transaction-id">
+                  <strong>{{ transaction.transactionId || 'TXN' + transaction.id }}</strong>
+                  <div class="muted">ID: {{ transaction.id }}</div>
+                </div>
+              </td>
+
+              <!-- Date & Time -->
+              <td>
+                <div class="datetime">
+                  <strong>{{ transaction.createdAt | date:'mediumDate' }}</strong>
+                  <div class="muted">{{ transaction.createdAt | date:'shortTime' }}</div>
+                  <div class="muted" *ngIf="transaction.completedAt">
+                    Completed: {{ transaction.completedAt | date:'shortTime' }}
+                  </div>
+                </div>
+              </td>
+
+              <!-- User Details -->
+              <td>
+                <div class="user-details">
+                  <div class="user-info">
+                    <strong *ngIf="transaction.isCurrentUserSender">
+                      You → {{ transaction.counterpartyName || 'Unknown User' }}
+                    </strong>
+                    <strong *ngIf="transaction.isCurrentUserReceiver">
+                      {{ transaction.counterpartyName || 'Unknown User' }} → You
+                    </strong>
+                    <strong *ngIf="!transaction.isCurrentUserSender && !transaction.isCurrentUserReceiver">
+                      {{ transaction.counterpartyName || 'RevPay System' }}
+                    </strong>
+                  </div>
+                  <div class="muted" *ngIf="transaction.counterpartyEmail">
+                    {{ transaction.counterpartyEmail }}
+                  </div>
+                  <div class="user-role">
+                    <span class="role-badge"
+                      [ngClass]="{
+                        'role-sender': transaction.isCurrentUserSender,
+                        'role-receiver': transaction.isCurrentUserReceiver,
+                        'role-system': !transaction.isCurrentUserSender && !transaction.isCurrentUserReceiver
+                      }">
+                      {{ getUserRole(transaction) }}
+                    </span>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Transaction Type -->
+              <td>
+                <div class="transaction-type">
+                  <span class="type-badge"
+                    [ngClass]="getTypeClass(transaction.transactionType)">
+                    {{ getTransactionTypeLabel(transaction.transactionType) }}
+                  </span>
+                  <div class="muted">{{ transaction.description || 'No description' }}</div>
+                </div>
+              </td>
+
+              <!-- Debited/Credited -->
+              <td>
+                <div class="debit-credit">
+                  <span class="debit-credit-badge"
+                    [ngClass]="{
+                      'credit-badge': transaction.transactionNature === 'CREDIT',
+                      'debit-badge': transaction.transactionNature === 'DEBIT'
+                    }">
+                    {{ transaction.transactionNature || 'UNKNOWN' }}
+                  </span>
+                  <div class="muted">
+                    {{ getDebitCreditDescription(transaction) }}
+                  </div>
+                </div>
+              </td>
+
+              <!-- Amount -->
+              <td>
+                <div class="amount-display">
+                  <span class="amount"
+                    [ngClass]="{
+                      'amount-green': transaction.transactionNature === 'CREDIT',
+                      'amount-red': transaction.transactionNature === 'DEBIT',
+                      'amount-blue': transaction.transactionType === 'ADD_FUNDS'
+                    }">
+                    {{ transaction.transactionNature === 'DEBIT' ? '-' : '+' }}₹{{ transaction.amount | number:'1.2-2' }}
+                  </span>
+                  <div class="muted">₹{{ transaction.amount | number:'1.2-2' }}</div>
+                </div>
+              </td>
+
+              <!-- Status -->
+              <td>
+                <div class="status-display">
+                  <span class="status-badge"
+                    [ngClass]="{
+                      'status-completed': transaction.status === 'COMPLETED',
+                      'status-pending': transaction.status === 'PENDING',
+                      'status-failed': transaction.status === 'FAILED',
+                      'status-unknown': !transaction.status
+                    }">
+                    {{ getStatusIcon(transaction.status) }} {{ transaction.status || 'UNKNOWN' }}
+                  </span>
+                  <div class="muted" *ngIf="transaction.status === 'PENDING'">
+                    Processing...
+                  </div>
+                  <div class="muted" *ngIf="transaction.status === 'FAILED'">
+                    Try again
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="tx-footer">
+        <button class="btn-outline" routerLink="/dashboard">
+          ← Back to Dashboard
+        </button>
+
+        <div class="pagination">
+          <button class="btn-outline-sm" [disabled]="currentPage <= 1" (click)="previousPage()">
+            Previous
+          </button>
+
+          <span class="page-indicator">Page {{ currentPage }}</span>
+
+          <button class="btn-outline-sm" [disabled]="!hasMorePages" (click)="nextPage()">
+            Next
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

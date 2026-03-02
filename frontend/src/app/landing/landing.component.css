@@ -1,0 +1,262 @@
+/* ===============================
+   GLOBAL
+================================ */
+.landing-container {
+  min-height: 100vh;
+  background-color: #0b0f1a;
+  color: #ffffff;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  line-height: 1.7;
+}
+
+/* ===============================
+   HERO SECTION
+================================ */
+.hero-section {
+  padding: 120px 24px 100px;
+}
+
+.hero-content {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 80px;
+}
+
+.hero-title {
+  font-size: 4rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  color: #cbd5f5;
+  margin-bottom: 20px;
+}
+
+.hero-description {
+  max-width: 520px;
+  color: #94a3b8;
+  margin-bottom: 40px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.hero-graphic {
+  display: none;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.btn {
+  padding: 14px 32px;
+  font-size: 1rem;
+  border-radius: 6px;
+}
+
+.btn-primary {
+  background: #6366f1;
+  color: #ffffff;
+}
+
+.btn-secondary,
+.btn-outline {
+  background: transparent;
+  border: 1px solid #6366f1;
+  color: #ffffff;
+}
+
+/* ===============================
+   SECTION TITLES
+================================ */
+.section-title {
+  text-align: left;
+  font-size: 2.6rem;
+  font-weight: 700;
+  margin-bottom: 60px;
+}
+
+/* ===============================
+   FEATURES
+================================ */
+.features-section {
+  padding: 100px 24px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 60px 80px;
+}
+
+.feature-card {
+  padding: 0;
+  background: none;
+}
+
+.feature-icon {
+  width: auto;
+  height: auto;
+  margin-bottom: 16px;
+  background: none;
+  font-size: 1.6rem;
+  color: #6366f1;
+}
+
+.feature-card h3 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  color: #94a3b8;
+  max-width: 420px;
+}
+
+/* ===============================
+   ABOUT
+================================ */
+.about-section {
+  padding: 100px 24px;
+}
+
+.about-content {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 80px;
+}
+
+.about-text p {
+  margin-bottom: 28px;
+  color: #cbd5f5;
+}
+
+.stats-grid {
+  margin-top: 50px;
+  display: flex;
+  gap: 60px;
+}
+
+.stat-item {
+  padding: 0;
+  background: none;
+}
+
+.stat-item h4 {
+  font-size: 2.4rem;
+  color: #6366f1;
+}
+
+.stat-item p {
+  color: #94a3b8;
+}
+
+.about-features {
+  gap: 24px;
+}
+
+.about-feature {
+  padding: 0;
+  background: none;
+}
+
+.about-feature i {
+  color: #22c55e;
+}
+
+/* ===============================
+   CTA
+================================ */
+.cta-section {
+  padding: 120px 24px;
+  text-align: center;
+}
+
+.cta-content h2 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.cta-content p {
+  max-width: 640px;
+  margin: auto auto 40px;
+  color: #cbd5f5;
+}
+
+/* ===============================
+   FOOTER
+================================ */
+.landing-footer {
+  padding: 80px 24px 40px;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 60px;
+}
+
+.footer-section h4 {
+  margin-bottom: 18px;
+}
+
+.footer-section p,
+.footer-section a {
+  color: #94a3b8;
+}
+
+.footer-bottom {
+  margin-top: 60px;
+  text-align: center;
+}
+
+/* ===============================
+   NAV DOTS
+================================ */
+.landing-nav {
+  right: 16px;
+}
+
+.nav-dot {
+  width: 10px;
+  height: 10px;
+  background: #64748b;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 900px) {
+  .hero-content,
+  .about-content {
+    grid-template-columns: 1fr;
+    gap: 50px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+  }
+}

@@ -1,0 +1,123 @@
+<div class="payment-wrapper">
+
+  <div class="payment-card">
+    <h2 class="title">Add Payment Method</h2>
+    <p class="subtitle">Securely save your card for faster payments</p>
+
+    <form (ngSubmit)="onSubmit()">
+
+      <!-- CARD TYPE -->
+      <div class="form-group">
+        <label for="cardType">Card Type</label>
+        <select
+          id="cardType"
+          name="cardType"
+          [(ngModel)]="paymentMethod.cardType"
+          required>
+          <option value="CREDIT">Credit Card</option>
+          <option value="DEBIT">Debit Card</option>
+        </select>
+      </div>
+
+      <!-- CARD NUMBER -->
+      <div class="form-group">
+        <label for="cardNumber">Card Number</label>
+        <input
+          type="text"
+          id="cardNumber"
+          name="cardNumber"
+          [(ngModel)]="paymentMethod.cardNumber"
+          placeholder="1234 5678 9012 3456"
+          maxlength="19"
+          required>
+      </div>
+
+      <!-- EXPIRY -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="expiryMonth">Expiry Month</label>
+          <select
+            id="expiryMonth"
+            name="expiryMonth"
+            [(ngModel)]="paymentMethod.expiryMonth"
+            required>
+            <option value="">MM</option>
+            <option *ngFor="let m of [1,2,3,4,5,6,7,8,9,10,11,12]" [value]="m">
+              {{ m < 10 ? '0' + m : m }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="expiryYear">Expiry Year</label>
+          <select
+            id="expiryYear"
+            name="expiryYear"
+            [(ngModel)]="paymentMethod.expiryYear"
+            required>
+            <option value="">YYYY</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+            <option value="2029">2029</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- CARDHOLDER -->
+      <div class="form-group">
+        <label for="cardholderName">Cardholder Name</label>
+        <input
+          type="text"
+          id="cardholderName"
+          name="cardholderName"
+          [(ngModel)]="paymentMethod.cardholderName"
+          placeholder="John Doe"
+          required>
+      </div>
+
+      <!-- BILLING -->
+      <div class="form-group">
+        <label for="billingAddress">Billing Address</label>
+        <textarea
+          id="billingAddress"
+          name="billingAddress"
+          [(ngModel)]="paymentMethod.billingAddress"
+          placeholder="123 Main St, City, State 12345"
+          rows="3"></textarea>
+      </div>
+
+      <!-- DEFAULT -->
+      <div class="checkbox-group">
+        <input
+          type="checkbox"
+          id="isDefault"
+          name="isDefault"
+          [(ngModel)]="paymentMethod.isDefault">
+        <label for="isDefault">Set as default payment method</label>
+      </div>
+
+      <!-- ALERTS -->
+      <div *ngIf="errorMessage" class="alert alert-error">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="actions">
+        <button type="button" class="btn-outline" (click)="cancel()">
+          Cancel
+        </button>
+        <button type="submit" class="btn-primary" [disabled]="isLoading">
+          {{ isLoading ? 'Adding...' : 'Add Payment Method' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

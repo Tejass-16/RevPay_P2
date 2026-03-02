@@ -1,0 +1,189 @@
+<div class="customer-invoices-container">
+  <div class="page-header">
+    <h2>My Invoices</h2>
+    <p>View and manage invoices sent to you</p>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-cards">
+    <div class="summary-card">
+      <div class="card-icon">📄</div>
+      <div class="card-content">
+        <h3>{{ filteredInvoices.length }}</h3>
+        <p>Total Invoices</p>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="card-icon">💰</div>
+      <div class="card-content">
+        <h3>{{ formatCurrency(getUnpaidAmount()) }}</h3>
+        <p>Unpaid Amount</p>
+      </div>
+    </div>
+    <div class="summary-card overdue">
+      <div class="card-icon">⚠️</div>
+      <div class="card-content">
+        <h3>{{ formatCurrency(getOverdueAmount()) }}</h3>
+        <p>Overdue Amount</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <label for="status-filter">Filter by Status:</label>
+    <select id="status-filter" [(ngModel)]="selectedStatus" (change)="onStatusFilterChange()">
+      <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+    </select>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading invoices...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">
+    <p>{{ errorMessage }}</p>
+    <button (click)="errorMessage = ''" class="close-btn">×</button>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="success-message">
+    <p>{{ successMessage }}</p>
+    <button (click)="successMessage = ''" class="close-btn">×</button>
+  </div>
+
+  <!-- Invoices List -->
+  <div *ngIf="!isLoading" class="invoices-list">
+    <div *ngIf="filteredInvoices.length === 0" class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>No invoices found</h3>
+      <p>You don't have any invoices {{ selectedStatus === 'ALL' ? '' : 'with status ' + selectedStatus }}</p>
+    </div>
+
+    <div *ngFor="let invoice of filteredInvoices" class="invoice-card" 
+         [class.overdue]="isOverdue(invoice)"
+         (click)="viewInvoiceDetails(invoice)">
+      <div class="invoice-header">
+        <div class="invoice-info">
+          <h4>{{ invoice.invoiceNumber }}</h4>
+          <p class="business-name">{{ invoice.business?.fullName || invoice.business?.businessName }}</p>
+        </div>
+        <div class="invoice-status">
+          <span class="status-badge {{ getStatusClass(invoice.status) }}">
+            {{ invoice.status }}
+          </span>
+          <span *ngIf="isOverdue(invoice)" class="overdue-badge">OVERDUE</span>
+        </div>
+      </div>
+
+      <div class="invoice-details">
+        <div class="detail-row">
+          <span class="label">Amount:</span>
+          <span class="amount">{{ formatCurrency(invoice.totalAmount) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Due Date:</span>
+          <span class="due-date" [class.past-due]="isOverdue(invoice)">
+            {{ formatDate(invoice.dueDate) }}
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Created:</span>
+          <span class="created-date">{{ formatDate(invoice.createdAt) }}</span>
+        </div>
+      </div>
+
+      <div class="invoice-actions" *ngIf="canPayInvoice(invoice)" (click)="$event.stopPropagation()">
+        <button class="pay-btn" (click)="payInvoice(invoice.id)" 
+                [disabled]="isProcessingPayment">
+          {{ isProcessingPayment ? 'Processing...' : 'Pay Now' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invoice Details Modal -->
+  <div *ngIf="selectedInvoice" class="modal-overlay" (click)="closeInvoiceDetails()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Invoice Details</h3>
+        <button class="close-btn" (click)="closeInvoiceDetails()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="invoice-summary">
+          <div class="summary-row">
+            <span class="label">Invoice Number:</span>
+            <span class="value">{{ selectedInvoice.invoiceNumber }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">Business:</span>
+            <span class="value">{{ selectedInvoice.business?.fullName || selectedInvoice.business?.businessName }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">Status:</span>
+            <span class="status-badge {{ getStatusClass(selectedInvoice.status) }}">
+              {{ selectedInvoice.status }}
+            </span>
+          </div>
+          <div class="summary-row">
+            <span class="label">Due Date:</span>
+            <span class="value" [class.past-due]="isOverdue(selectedInvoice)">
+              {{ formatDate(selectedInvoice.dueDate) }}
+            </span>
+          </div>
+        </div>
+
+        <div class="invoice-items">
+          <h4>Items</h4>
+          <div class="items-table">
+            <div class="table-header">
+              <span>Description</span>
+              <span>Quantity</span>
+              <span>Unit Price</span>
+              <span>Total</span>
+            </div>
+            <div *ngFor="let item of selectedInvoice.items" class="table-row">
+              <span>{{ item.description }}</span>
+              <span>{{ item.quantity }}</span>
+              <span>{{ formatCurrency(item.unitPrice) }}</span>
+              <span>{{ formatCurrency(item.lineTotal) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="invoice-totals">
+          <div class="total-row">
+            <span>Subtotal:</span>
+            <span>{{ formatCurrency(selectedInvoice.subtotal) }}</span>
+          </div>
+          <div class="total-row">
+            <span>Tax (18%):</span>
+            <span>{{ formatCurrency(selectedInvoice.taxAmount) }}</span>
+          </div>
+          <div class="total-row grand-total">
+            <span>Total Amount:</span>
+            <span>{{ formatCurrency(selectedInvoice.totalAmount) }}</span>
+          </div>
+        </div>
+
+        <div class="payment-section" *ngIf="canPayInvoice(selectedInvoice)">
+          <div class="payment-warning">
+            <p>⚠️ This payment will be deducted from your wallet balance</p>
+          </div>
+          <button class="pay-btn large" (click)="payInvoice(selectedInvoice.id)"
+                  [disabled]="isProcessingPayment">
+            {{ isProcessingPayment ? 'Processing Payment...' : 'Pay ' + formatCurrency(selectedInvoice.totalAmount) }}
+          </button>
+        </div>
+
+        <div class="payment-info" *ngIf="selectedInvoice.status === 'PAID'">
+          <p class="paid-message">✅ This invoice has been paid</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

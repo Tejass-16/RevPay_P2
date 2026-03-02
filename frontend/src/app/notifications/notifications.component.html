@@ -1,0 +1,68 @@
+<div class="container">
+  <div class="notifications-header">
+    <h2>Notifications</h2>
+    <div class="notification-controls">
+      <button class="btn btn-secondary" (click)="clearAll()">Clear All</button>
+      <span class="unread-count" *ngIf="getUnreadCount() > 0">
+        {{ getUnreadCount() }} unread
+      </span>
+    </div>
+  </div>
+
+  <!-- Notification Preferences -->
+  <div class="preferences-section">
+    <h3>Notification Preferences</h3>
+    <div class="preference-item">
+      <label>
+        <input type="checkbox" [(ngModel)]="preferences.lowBalanceAlerts" (ngModelChange)="updatePreferences()">
+        Low Balance Alerts
+      </label>
+    </div>
+    <div class="preference-item">
+      <label>
+        <input type="checkbox" [(ngModel)]="preferences.moneyReceivedAlerts" (ngModelChange)="updatePreferences()">
+        Money Received Alerts
+      </label>
+    </div>
+    <div class="preference-item">
+      <label>
+        <input type="checkbox" [(ngModel)]="preferences.moneyRequestAlerts" (ngModelChange)="updatePreferences()">
+        Money Request Alerts
+      </label>
+    </div>
+    <div class="preference-item">
+      <label>
+        <input type="checkbox" [(ngModel)]="preferences.securityChangeAlerts" (ngModelChange)="updatePreferences()">
+        Security Change Alerts
+      </label>
+    </div>
+  </div>
+
+  <!-- Notifications List -->
+  <div class="notifications-list" *ngIf="!isLoading">
+    <div class="notification-item" 
+         *ngFor="let notification of notifications" 
+         [class.unread]="!notification.isRead"
+         (click)="markAsRead(notification.id)">
+      <div class="notification-icon">
+        {{ getNotificationIcon(notification.type) }}
+      </div>
+      <div class="notification-content">
+        <div class="notification-title">{{ notification.title }}</div>
+        <div class="notification-message">{{ notification.message }}</div>
+        <div class="notification-time">{{ notification.createdAt | date:'short' }}</div>
+      </div>
+      <div class="notification-status">
+        <span class="read-indicator" *ngIf="!notification.isRead">●</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="isLoading">
+    <p>Loading notifications...</p>
+  </div>
+
+  <div class="empty-state" *ngIf="!isLoading && notifications.length === 0">
+    <p>No notifications</p>
+  </div>
+</div>

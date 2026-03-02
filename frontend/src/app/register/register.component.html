@@ -1,0 +1,96 @@
+<div class="container register-container">
+
+  <div class="card register-card">
+    <h2 class="title">Create Account</h2>
+    <p class="subtitle">Join RevPay for secure digital payments</p>
+
+    <form (ngSubmit)="register()">
+
+      <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input
+          type="text"
+          id="firstName"
+          name="firstName"
+          [(ngModel)]="firstName"
+          required
+          placeholder="Enter first name"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input
+          type="text"
+          id="lastName"
+          name="lastName"
+          [(ngModel)]="lastName"
+          required
+          placeholder="Enter last name"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="email"
+          required
+          placeholder="Enter email"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="password"
+          required
+          placeholder="Enter password"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="transactionPin">Transaction PIN</label>
+        <input
+          type="password"
+          id="transactionPin"
+          name="transactionPin"
+          [(ngModel)]="transactionPin"
+          required
+          maxlength="4"
+          pattern="[0-9]{4}"
+          placeholder="Enter 4-digit PIN"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="role">Role</label>
+        <select
+          id="role"
+          name="role"
+          [(ngModel)]="role"
+          required
+        >
+          <option value="USER">Personal</option>
+          <option value="BUSINESS">Business</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        Register
+      </button>
+
+    </form>
+
+    <div class="register-link">
+      Already have an account?
+      <a routerLink="/login">Login here</a>
+    </div>
+  </div>
+
+</div>

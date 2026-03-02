@@ -1,0 +1,44 @@
+<div class="container">
+  <div class="header">
+    <h1>Payment Methods</h1>
+    <button class="btn btn-primary" (click)="addPaymentMethod()">Add New Payment Method</button>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+
+  <div class="payment-methods-list" *ngIf="!isLoading">
+    <div class="payment-method-card" *ngFor="let method of paymentMethods">
+      <div class="card-header">
+        <h3>{{ method.cardholderName }}</h3>
+        <span class="card-type">{{ method.cardType }}</span>
+        <span class="default-badge" *ngIf="method.isDefault">Default</span>
+      </div>
+      
+      <div class="card-details">
+        <p><strong>Card:</strong> ****-****-{{ method.cardLastFour }}</p>
+        <p><strong>Expires:</strong> {{ method.expiryMonth }}/{{ method.expiryYear }}</p>
+        <p><strong>Billing Address:</strong> {{ method.billingAddress || 'Not provided' }}</p>
+      </div>
+      
+      <div class="card-actions">
+        <button class="btn btn-secondary" (click)="editPaymentMethod(method.id)">Edit</button>
+        <button class="btn btn-danger" (click)="deletePaymentMethod(method.id)" *ngIf="!method.isDefault">Delete</button>
+        <button class="btn btn-primary" (click)="setAsDefault(method.id)" *ngIf="!method.isDefault">Set as Default</button>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="paymentMethods.length === 0">
+      <p>No payment methods found. Click "Add New Payment Method" to get started.</p>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="isLoading">
+    <p>Loading payment methods...</p>
+  </div>
+</div>

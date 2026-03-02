@@ -1,0 +1,210 @@
+<div class="landing-container">
+  <!-- Hero Section -->
+  <header class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">RevPay</h1>
+        <p class="hero-subtitle">Secure Digital Payment Solution for Modern Business</p>
+        <p class="hero-description">
+          Experience seamless transactions, smart invoicing, and comprehensive analytics 
+          all in one powerful platform designed for businesses and individuals.
+        </p>
+        <div class="hero-buttons">
+          <button class="btn btn-primary" (click)="navigateToLogin()">
+            <i class="fas fa-sign-in-alt"></i>
+            Login
+          </button>
+          <button class="btn btn-secondary" (click)="navigateToRegister()">
+            <i class="fas fa-user-plus"></i>
+            Register
+          </button>
+        </div>
+      </div>
+      <div class="hero-image">
+        <div class="hero-graphic">
+          <i class="fas fa-credit-card"></i>
+          <i class="fas fa-chart-line"></i>
+          <i class="fas fa-shield-alt"></i>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Dots -->
+  <nav class="landing-nav">
+    <button class="nav-dot" (click)="scrollToFeatures()">Features</button>
+    <button class="nav-dot" (click)="scrollToAbout()">About</button>
+  </nav>
+
+  <!-- Features Section -->
+  <section id="features" class="features-section">
+    <div class="container">
+      <h2 class="section-title">Powerful Features</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-exchange-alt"></i>
+          </div>
+          <h3>Instant Transfers</h3>
+          <p>Send and receive money instantly with our secure payment network. Support for multiple payment methods and real-time processing.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-file-invoice-dollar"></i>
+          </div>
+          <h3>Smart Invoicing</h3>
+          <p>Create professional invoices, track payments, and manage billing with automated reminders and payment processing.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <h3>Advanced Analytics</h3>
+          <p>Comprehensive reporting with revenue insights, customer analytics, and detailed transaction history.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h3>Business Tools</h3>
+          <p>Complete business verification, payment method management, and customer relationship management.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-mobile-alt"></i>
+          </div>
+          <h3>Social Payments</h3>
+          <p>Send money to friends and family through social media integration with QR code support.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3>Bank-Level Security</h3>
+          <p>Enterprise-grade encryption, two-factor authentication, and fraud detection keep your money safe.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="about-section">
+    <div class="container">
+      <h2 class="section-title">About RevPay</h2>
+      <div class="about-content">
+        <div class="about-text">
+          <p>
+            RevPay is a next-generation digital payment platform designed to simplify financial transactions 
+            for businesses and individuals. Built with cutting-edge technology and security-first approach, 
+            we provide a comprehensive solution for modern payment needs.
+          </p>
+          <p>
+            Our mission is to democratize financial services by making digital payments accessible, 
+            secure, and efficient for everyone. Whether you're a small business owner, 
+            freelancer, or individual user, RevPay adapts to your unique requirements.
+          </p>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <h4>10K+</h4>
+              <p>Active Users</p>
+            </div>
+            <div class="stat-item">
+              <h4>₹50M+</h4>
+              <p>Transactions Processed</p>
+            </div>
+            <div class="stat-item">
+              <h4>99.9%</h4>
+              <p>Uptime</p>
+            </div>
+          </div>
+        </div>
+        <div class="about-features">
+          <div class="about-feature">
+            <i class="fas fa-check-circle"></i>
+            <h4>Secure & Compliant</h4>
+            <p>RBI compliant with end-to-end encryption</p>
+          </div>
+          <div class="about-feature">
+            <i class="fas fa-check-circle"></i>
+            <h4>24/7 Support</h4>
+            <p>Round-the-clock customer assistance</p>
+          </div>
+          <div class="about-feature">
+            <i class="fas fa-check-circle"></i>
+            <h4>Instant Settlements</h4>
+            <p>Quick money transfers and settlements</p>
+          </div>
+          <div class="about-feature">
+            <i class="fas fa-check-circle"></i>
+            <h4>Multi-Platform</h4>
+            <p>Web, mobile, and API access</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content">
+        <h2>Ready to Transform Your Payment Experience?</h2>
+        <p>Join thousands of users who trust RevPay for their digital payment needs.</p>
+        <div class="cta-buttons">
+          <button class="btn btn-primary btn-large" (click)="navigateToRegister()">
+            <i class="fas fa-rocket"></i>
+            Get Started Now
+          </button>
+          <button class="btn btn-outline btn-large" (click)="navigateToLogin()">
+            <i class="fas fa-sign-in-alt"></i>
+            Login to Account
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>RevPay</h4>
+          <p>Modern payment solution for digital India</p>
+        </div>
+        <div class="footer-section">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="#" (click)="navigateToLogin()">Login</a></li>
+            <li><a href="#" (click)="navigateToRegister()">Register</a></li>
+            <li><a href="#features">Features</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#">Security</a></li>
+            <li><a href="#">Support</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Compliance</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 RevPay. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</div>

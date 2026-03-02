@@ -1,0 +1,106 @@
+<div class="container">
+  <h2>Money Requests</h2>
+  
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <button class="tab-button" (click)="showTab('pending')" [class.active]="activeTab === 'pending'">Pending Requests</button>
+    <button class="tab-button" (click)="showTab('sent')" [class.active]="activeTab === 'sent'">Sent Requests</button>
+    <button class="tab-button" (click)="showTab('received')" [class.active]="activeTab === 'received'">Received Requests</button>
+  </div>
+
+  <!-- Create New Request Form -->
+  <div class="create-request-section">
+    <h3>Create New Money Request</h3>
+    <div class="form-group">
+      <label for="receiverId">Receiver User ID:</label>
+      <input type="number" id="receiverId" [(ngModel)]="newReceiverId" placeholder="Enter receiver user ID">
+    </div>
+    <div class="form-group">
+      <label for="amount">Amount:</label>
+      <input type="number" id="amount" [(ngModel)]="newAmount" placeholder="Enter amount">
+    </div>
+    <div class="form-group">
+      <label for="description">Description:</label>
+      <input type="text" id="description" [(ngModel)]="newDescription" placeholder="Enter description">
+    </div>
+    <button class="btn btn-primary" (click)="createRequest()">Create Request</button>
+  </div>
+
+  <!-- Pending Requests -->
+  <div class="content" *ngIf="activeTab === 'pending'">
+    <h3>Pending Requests</h3>
+    <div class="request-list">
+      <div class="request-item" *ngFor="let request of pendingRequests">
+        <div class="request-header">
+          <span class="request-id">{{ request.id }}</span>
+          <span class="request-amount">₹{{ request.amount }}</span>
+          <span class="request-date">{{ request.createdAt | date }}</span>
+        </div>
+        <div class="request-details">
+          <p><strong>From:</strong> {{ request.requester?.email }}</p>
+          <p><strong>To:</strong> {{ request.receiver?.email }}</p>
+          <p><strong>Description:</strong> {{ request.purpose }}</p>
+        </div>
+        <div class="request-actions">
+          <button class="btn btn-success" (click)="acceptRequest(request.id)" 
+                  *ngIf="request.receiver?.email === getCurrentUserEmail() && request.status === 'PENDING'">Accept</button>
+          <button class="btn btn-danger" (click)="declineRequest(request.id)" 
+                  *ngIf="request.receiver?.email === getCurrentUserEmail() && request.status === 'PENDING'">Decline</button>
+          <button class="btn btn-warning" (click)="cancelRequest(request.id)" 
+                  *ngIf="request.requester?.email === getCurrentUserEmail() && request.status === 'PENDING'">Cancel</button>
+          <button class="btn btn-info" (click)="viewRequestDetails(request.id)">View Details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sent Requests -->
+  <div class="content" *ngIf="activeTab === 'sent'">
+    <h3>Sent Requests</h3>
+    <div class="request-list">
+      <div class="request-item" *ngFor="let request of sentRequests">
+        <div class="request-header">
+          <span class="request-id">{{ request.id }}</span>
+          <span class="request-amount">₹{{ request.amount }}</span>
+          <span class="request-date">{{ request.createdAt | date }}</span>
+        </div>
+        <div class="request-details">
+          <p><strong>To:</strong> {{ request.receiver?.email }}</p>
+          <p><strong>Description:</strong> {{ request.purpose }}</p>
+          <p><strong>Status:</strong> <span class="status-badge status-{{ request.status?.toLowerCase() }}">{{ request.status }}</span></p>
+        </div>
+        <div class="request-actions">
+          <button class="btn btn-warning" (click)="cancelRequest(request.id)" 
+                  *ngIf="request.requester?.email === getCurrentUserEmail() && request.status === 'PENDING'">Cancel</button>
+          <button class="btn btn-info" (click)="viewRequestDetails(request.id)">View Details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Received Requests -->
+  <div class="content" *ngIf="activeTab === 'received'">
+    <h3>Received Requests</h3>
+    <div class="request-list">
+      <div class="request-item" *ngFor="let request of receivedRequests">
+        <div class="request-header">
+          <span class="request-id">{{ request.id }}</span>
+          <span class="request-amount">₹{{ request.amount }}</span>
+          <span class="request-date">{{ request.createdAt | date }}</span>
+        </div>
+        <div class="request-details">
+          <p><strong>From:</strong> {{ request.requester?.email }}</p>
+          <p><strong>Description:</strong> {{ request.purpose }}</p>
+          <p><strong>Status:</strong> <span class="status-badge status-{{ request.status?.toLowerCase() }}">{{ request.status }}</span></p>
+        </div>
+        <div class="request-actions">
+          <button class="btn btn-success" (click)="acceptRequest(request.id)" 
+                  *ngIf="request.receiver?.email === getCurrentUserEmail() && request.status === 'PENDING'">Accept</button>
+          <button class="btn btn-danger" (click)="declineRequest(request.id)" 
+                  *ngIf="request.receiver?.email === getCurrentUserEmail() && request.status === 'PENDING'">Decline</button>
+          <button class="btn btn-info" (click)="viewRequestDetails(request.id)">View Details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

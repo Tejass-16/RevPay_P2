@@ -1,0 +1,92 @@
+<div class="funds-wrapper">
+
+  <div class="funds-card">
+    <h2 class="title">Add Funds to Account</h2>
+    <p class="subtitle">Securely top-up your RevPay wallet</p>
+
+    <form (ngSubmit)="onSubmit()">
+
+      <!-- PAYMENT METHOD -->
+      <div class="form-group">
+        <label for="paymentMethod">Payment Method</label>
+        <select
+          id="paymentMethod"
+          name="paymentMethod"
+          [(ngModel)]="paymentMethod"
+          required>
+          <option value="">Select Payment Method</option>
+          <option value="card">Credit / Debit Card</option>
+          <option value="bank">Bank Transfer</option>
+        </select>
+      </div>
+
+      <!-- CARD -->
+      <div class="form-group" *ngIf="paymentMethod === 'card'">
+        <label for="paymentMethodId">Select Card</label>
+        <select
+          id="paymentMethodId"
+          name="paymentMethodId"
+          [(ngModel)]="selectedPaymentMethod"
+          required>
+          <option value="">Select a card</option>
+          <option *ngFor="let method of paymentMethods" [value]="method.id">
+            {{ method.cardholderName }} (**** {{ method.cardLastFour }})
+          </option>
+        </select>
+      </div>
+
+      <!-- BANK -->
+      <div class="form-group" *ngIf="paymentMethod === 'bank'">
+        <label for="bankAccount">Bank Account Number</label>
+        <input
+          type="text"
+          id="bankAccount"
+          name="bankAccount"
+          [(ngModel)]="bankAccount"
+          placeholder="Enter your bank account number"
+          required>
+      </div>
+
+      <!-- AMOUNT -->
+      <div class="form-group">
+        <label for="amount">Amount (₹)</label>
+        <input
+          type="number"
+          id="amount"
+          name="amount"
+          [(ngModel)]="amount"
+          step="0.01"
+          min="0.01"
+          placeholder="0.00"
+          required>
+      </div>
+
+      <!-- ALERTS -->
+      <div *ngIf="errorMessage" class="alert alert-error">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="actions">
+        <button type="button" class="btn-outline" (click)="cancel()">
+          Cancel
+        </button>
+
+        <button type="submit" class="btn-primary" [disabled]="isLoading">
+          {{ isLoading ? 'Adding Funds...' : 'Add Funds' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-box" *ngIf="isLoading">
+  <div class="spinner"></div>
+  <p>Loading payment methods...</p>
+</div>

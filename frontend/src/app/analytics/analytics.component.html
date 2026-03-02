@@ -1,0 +1,336 @@
+<div class="analytics-container">
+  <div class="analytics-header">
+    <h2>Analytics & Reporting</h2>
+    <div class="tab-navigation">
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'personal'"
+        (click)="switchTab('personal')"
+      >
+        <i class="fas fa-user"></i>
+        Personal Analytics
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'business'"
+        (click)="switchTab('business')"
+        *ngIf="userRole === 'BUSINESS'"
+      >
+        <i class="fas fa-chart-line"></i>
+        Business Analytics
+      </button>
+    </div>
+  </div>
+
+  <!-- Personal Analytics Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'personal'">
+    <div class="loading-overlay" *ngIf="personalLoading">
+      <div class="spinner"></div>
+      <p>Loading personal analytics...</p>
+    </div>
+
+    <div class="personal-analytics" *ngIf="!personalLoading">
+      <!-- Summary Cards -->
+      <div class="summary-cards">
+        <div class="summary-card">
+          <div class="card-icon sent">
+            <i class="fas fa-arrow-up"></i>
+          </div>
+          <div class="card-content">
+            <h3>Total Sent</h3>
+            <p class="amount">{{ formatCurrency(personalAnalytics.totalSent || 0) }}</p>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-icon received">
+            <i class="fas fa-arrow-down"></i>
+          </div>
+          <div class="card-content">
+            <h3>Total Received</h3>
+            <p class="amount">{{ formatCurrency(personalAnalytics.totalReceived || 0) }}</p>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-icon withdrawn">
+            <i class="fas fa-sign-out-alt"></i>
+          </div>
+          <div class="card-content">
+            <h3>Total Withdrawn</h3>
+            <p class="amount">{{ formatCurrency(personalAnalytics.totalWithdrawn || 0) }}</p>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-icon transactions">
+            <i class="fas fa-exchange-alt"></i>
+          </div>
+          <div class="card-content">
+            <h3>Total Transactions</h3>
+            <p class="count">{{ personalAnalytics.transactionCount || 0 }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction Chart Placeholder -->
+      <div class="chart-section">
+        <h3>Transaction Trends</h3>
+        <div class="chart-placeholder">
+          <p>Chart visualization will be displayed here</p>
+          <div class="trend-summary">
+            <div class="trend-item">
+              <span class="label">Total Sent:</span>
+              <span class="value">{{ formatCurrency(personalAnalytics.totalSent || 0) }}</span>
+            </div>
+            <div class="trend-item">
+              <span class="label">Total Received:</span>
+              <span class="value">{{ formatCurrency(personalAnalytics.totalReceived || 0) }}</span>
+            </div>
+            <div class="trend-item">
+              <span class="label">Total Withdrawn:</span>
+              <span class="value">{{ formatCurrency(personalAnalytics.totalWithdrawn || 0) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters Section -->
+      <div class="filters-section">
+        <h3>Advanced Filters</h3>
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label for="typeFilter">Transaction Type</label>
+            <select id="typeFilter" [(ngModel)]="personalFilters.type">
+              <option value="">All Types</option>
+              <option value="SENT">Sent</option>
+              <option value="RECEIVED">Received</option>
+              <option value="WITHDRAWN">Withdrawn</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="startDate">Start Date</label>
+            <input 
+              type="date" 
+              id="startDate" 
+              [(ngModel)]="personalFilters.startDate"
+            >
+          </div>
+
+          <div class="filter-group">
+            <label for="endDate">End Date</label>
+            <input 
+              type="date" 
+              id="endDate" 
+              [(ngModel)]="personalFilters.endDate"
+            >
+          </div>
+
+          <div class="filter-group">
+            <label for="minAmount">Min Amount</label>
+            <input 
+              type="number" 
+              id="minAmount" 
+              [(ngModel)]="personalFilters.minAmount"
+              placeholder="0"
+            >
+          </div>
+
+          <div class="filter-group">
+            <label for="maxAmount">Max Amount</label>
+            <input 
+              type="number" 
+              id="maxAmount" 
+              [(ngModel)]="personalFilters.maxAmount"
+              placeholder="0"
+            >
+          </div>
+
+          <div class="filter-actions">
+            <button class="btn btn-primary" (click)="applyPersonalFilters()">
+              <i class="fas fa-filter"></i>
+              Apply Filters
+            </button>
+            <button class="btn btn-secondary" (click)="clearPersonalFilters()">
+              <i class="fas fa-times"></i>
+              Clear
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export Options -->
+      <div class="export-section">
+        <h3>Export Options</h3>
+        <div class="export-buttons">
+          <button class="btn btn-success" (click)="exportPersonalTransactions('csv')">
+            <i class="fas fa-file-csv"></i>
+            Export CSV
+          </button>
+          <button class="btn btn-danger" (click)="exportPersonalTransactions('pdf')">
+            <i class="fas fa-file-pdf"></i>
+            Export PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Transactions Table -->
+      <div class="transactions-table-section">
+        <h3>Recent Transactions</h3>
+        <div class="table-responsive">
+          <table class="transactions-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Counterparty</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let transaction of personalTransactions">
+                <td>
+                  <span class="transaction-type" 
+                    [style.color]="getTransactionTypeColor(transaction.type)">
+                    <i class="fas">{{ getTransactionTypeIcon(transaction.type) }}</i>
+                    {{ transaction.type }}
+                  </span>
+                </td>
+                <td class="amount">{{ formatCurrency(transaction.amount) }}</td>
+                <td>{{ transaction.description || '-' }}</td>
+                <td>{{ transaction.counterpartyName || '-' }}</td>
+                <td>{{ formatDate(transaction.createdAt) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Business Analytics Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'business' && userRole === 'BUSINESS'">
+    <div class="loading-overlay" *ngIf="businessLoading">
+      <div class="spinner"></div>
+      <p>Loading business analytics...</p>
+    </div>
+
+    <div class="business-analytics" *ngIf="!businessLoading">
+      <!-- Business Summary Cards -->
+      <div class="summary-cards">
+        <div class="summary-card">
+          <div class="card-icon revenue">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div class="card-content">
+            <h3>Total Revenue</h3>
+            <p class="amount">{{ formatCurrency(businessAnalytics.totalRevenue || 0) }}</p>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-icon outstanding">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="card-content">
+            <h3>Outstanding</h3>
+            <p class="amount">{{ formatCurrency(businessAnalytics.outstandingInvoices || 0) }}</p>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-icon customers">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="card-content">
+            <h3>Total Customers</h3>
+            <p class="count">{{ businessAnalytics.totalCustomers || 0 }}</p>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-icon active-customers">
+            <i class="fas fa-user-check"></i>
+          </div>
+          <div class="card-content">
+            <h3>Active Customers</h3>
+            <p class="count">{{ businessAnalytics.activeCustomers || 0 }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue Charts -->
+      <div class="charts-section">
+        <div class="chart-container">
+          <h3>Daily Revenue</h3>
+          <div class="chart-placeholder">
+            <p>Daily revenue chart will be displayed here</p>
+            <div class="trend-summary">
+              <div class="trend-item">
+                <span class="label">Total Revenue:</span>
+                <span class="value">{{ formatCurrency(businessAnalytics.totalRevenue || 0) }}</span>
+              </div>
+              <div class="trend-item">
+                <span class="label">Outstanding:</span>
+                <span class="value">{{ formatCurrency(businessAnalytics.outstandingInvoices || 0) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <h3>Top Customers</h3>
+          <div class="chart-placeholder">
+            <p>Customer revenue chart will be displayed here</p>
+            <div class="customer-preview">
+              <div class="customer-item" *ngFor="let customer of topCustomers.slice(0, 3)">
+                <span class="customer-name">{{ customer.customerName }}</span>
+                <span class="customer-spent">{{ formatCurrency(customer.totalSpent) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Insights -->
+      <div class="customer-insights-section">
+        <h3>Customer Insights</h3>
+        <div class="customer-cards">
+          <div class="customer-card" *ngFor="let customer of topCustomers">
+            <div class="customer-header">
+              <h4>{{ customer.customerName }}</h4>
+              <span class="customer-email">{{ customer.customerEmail }}</span>
+            </div>
+            <div class="customer-stats">
+              <div class="stat">
+                <span class="label">Total Spent:</span>
+                <span class="value">{{ formatCurrency(customer.totalSpent) }}</span>
+              </div>
+              <div class="stat">
+                <span class="label">Transactions:</span>
+                <span class="value">{{ customer.transactionCount }}</span>
+              </div>
+              <div class="stat">
+                <span class="label">Invoices:</span>
+                <span class="value">{{ customer.invoiceCount }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Business Export Options -->
+      <div class="export-section">
+        <h3>Export Options</h3>
+        <div class="export-buttons">
+          <button class="btn btn-success" (click)="exportBusinessInvoices()">
+            <i class="fas fa-file-csv"></i>
+            Export Invoices CSV
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

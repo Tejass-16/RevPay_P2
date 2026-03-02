@@ -1,0 +1,57 @@
+<div class="container">
+  <h2>Social Payments</h2>
+  
+  <!-- Create New Payment Form -->
+  <div class="create-payment-section">
+    <h3>Create New Social Payment</h3>
+    <div class="form-group">
+      <label for="amount">Amount:</label>
+      <input type="number" id="amount" [(ngModel)]="newAmount" placeholder="Enter amount">
+    </div>
+    <div class="form-group">
+      <label for="platform">Platform:</label>
+      <select id="platform" [(ngModel)]="newPlatform">
+        <option value="">Select Platform</option>
+        <option value="PAYPAL">PayPal</option>
+        <option value="STRIPE">Stripe</option>
+        <option value="VENMO">Venmo</option>
+        <option value="CASHAPP">Cash App</option>
+        <option value="ZELLE">Zelle</option>
+        <option value="UPI">UPI</option>
+        <option value="BANK_TRANSFER">Bank Transfer</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="description">Description:</label>
+      <input type="text" id="description" [(ngModel)]="newDescription" placeholder="Enter description">
+    </div>
+    <div class="form-group">
+      <label for="externalReference">External Reference (Optional):</label>
+      <input type="text" id="externalReference" [(ngModel)]="newExternalReference" placeholder="Enter external reference">
+    </div>
+    <button class="btn btn-primary" (click)="createPayment()">Create Payment</button>
+  </div>
+
+  <!-- Payments List -->
+  <div class="payments-list">
+    <h3>Your Social Payments</h3>
+    <div class="payment-item" *ngFor="let payment of payments">
+      <div class="payment-header">
+        <span class="payment-id">{{ payment.id }}</span>
+        <span class="payment-amount">${{ payment.amount }}</span>
+        <span class="payment-platform">{{ payment.platform }}</span>
+        <span class="payment-date">{{ payment.createdAt | date }}</span>
+      </div>
+      <div class="payment-details">
+        <p><strong>Description:</strong> {{ payment.description }}</p>
+        <p><strong>External Reference:</strong> {{ payment.externalReference || 'N/A' }}</p>
+        <p><strong>Status:</strong> <span class="status-badge status-{{ payment.status?.toLowerCase() }}">{{ payment.status }}</span></p>
+      </div>
+      <div class="payment-actions">
+        <button class="btn btn-success" (click)="completePayment(payment.id)" *ngIf="payment.status === 'PENDING'">Complete</button>
+        <button class="btn btn-danger" (click)="failPayment(payment.id)" *ngIf="payment.status === 'PENDING'">Fail</button>
+        <button class="btn btn-info" (click)="viewPaymentDetails(payment.id)">View Details</button>
+      </div>
+    </div>
+  </div>
+</div>
